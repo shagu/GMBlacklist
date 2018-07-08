@@ -1,0 +1,8 @@
+## Interface: 11200
+## Title: |cffff5555GM|cffffffffBlacklist
+## Author: Shagu
+## Notes: A little tool that helps GMs to cut and blacklist raw chat messages
+## Version: 0.1
+
+# main
+GMBlacklist.lua
