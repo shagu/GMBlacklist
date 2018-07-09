@@ -143,18 +143,20 @@ GMBlacklistGUI.limitdown:SetScript("OnClick", function()
   end
 end)
 
-GMBlacklistGUI.limitdown = CreateFrame("Button", "GMBlacklistGUILimitDown", GMBlacklistGUI, "UIPanelButtonTemplate")
-GMBlacklistGUI.limitdown:SetWidth(50)
-GMBlacklistGUI.limitdown:SetHeight(22)
-GMBlacklistGUI.limitdown:SetPoint("BOTTOMLEFT", 175, 9)
-GMBlacklistGUI.limitdown:SetText("Blacklist")
-GMBlacklistGUI.limitdown:SetScript("OnClick", function()
+GMBlacklistGUI.blacklist = CreateFrame("Button", "GMBlacklistGUIBlacklist", GMBlacklistGUI, "UIPanelButtonTemplate")
+GMBlacklistGUI.blacklist:SetWidth(50)
+GMBlacklistGUI.blacklist:SetHeight(22)
+GMBlacklistGUI.blacklist:SetPoint("BOTTOMLEFT", 175, 9)
+GMBlacklistGUI.blacklist:SetText("Blacklist")
+GMBlacklistGUI.blacklist:SetScript("OnClick", function()
 
+  local name  = GMBlacklistGUI.name:GetText()
   local text  = GMBlacklistLog[GMBlacklistGUI.name:GetText()]
   local start = tonumber(GMBlacklistGUI.start:GetText())
   local limit = tonumber(GMBlacklistGUI.limit:GetText())
   local snipp = strsub(text, start, limit)
   local forma = gsub(snipp, "%|", "||")
+  local ban   = GMBlacklistGUI.checkban:GetChecked()
 
   StaticPopupDialogs["GM_BLACKLIST"] = {
     text = "\"|cffff5555" .. forma .. "|r\"\nWill be blacklisted. Proceed?",
@@ -162,6 +164,9 @@ GMBlacklistGUI.limitdown:SetScript("OnClick", function()
     button2 = "No",
     OnAccept = function()
       SendChatMessage(".anticheat blacklist " .. snipp)
+      if ban then
+        SendChatMessage(".ban character " .. name .. " 0 \"Spam Blacklist\"")
+      end
     end,
 
     timeout = 0,
@@ -172,6 +177,17 @@ GMBlacklistGUI.limitdown:SetScript("OnClick", function()
 
   StaticPopup_Show ("GM_BLACKLIST")
 end)
+
+GMBlacklistGUI.checkbanl = GMBlacklistGUI:CreateFontString("GMBlacklistGUICheckBan", "LOW", "GameFontWhite")
+GMBlacklistGUI.checkbanl:SetPoint("LEFT", GMBlacklistGUI.blacklist, "RIGHT", 5, 0)
+GMBlacklistGUI.checkbanl:SetText("Ban User")
+GMBlacklistGUI.checkbanl:SetTextColor(.7,.7,.7,1)
+
+GMBlacklistGUI.checkban = CreateFrame("CheckButton", "GMBlacklistGUICheckBan", GMBlacklistGUI, "UICheckButtonTemplate")
+GMBlacklistGUI.checkban:SetPoint("LEFT", GMBlacklistGUI.checkbanl, "RIGHT", 2, -1)
+GMBlacklistGUI.checkban:SetWidth(20)
+GMBlacklistGUI.checkban:SetHeight(20)
+GMBlacklistGUI.checkban:SetChecked(true)
 
 GMBlacklistGUI.close = CreateFrame("Button", "GMBlacklistGUIClose", GMBlacklistGUI, "UIPanelCloseButton")
 GMBlacklistGUI.close:SetWidth(20)
@@ -187,7 +203,7 @@ function GMBlacklistCMD(name)
     GMBlacklistGUI.message:SetText(gsub(GMBlacklistLog[name], "%|", "||"))
     GMBlacklistGUI.snippet:SetText(gsub(GMBlacklistLog[name], "%|", "||"))
     local width = GMBlacklistGUI.message:GetStringWidth() + 20
-    GMBlacklistGUI:SetWidth(width < 250 and 250 or width)
+    GMBlacklistGUI:SetWidth(width < 300 and 300 or width)
 
     GMBlacklistGUI.start:SetText(0)
     GMBlacklistGUI.limit:SetText(strlen(GMBlacklistLog[name]))
